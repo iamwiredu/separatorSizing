@@ -65,3 +65,64 @@ def Ql(Wl: float,Pl: float) -> float:
 
 def crossecArea(D: float) -> float:
     return (math.pi * D**2) / 4
+
+
+## Step 5 calculate the surge and holdup volumes
+
+def holdup_volume(holdup_time: int, Ql: float) -> float:
+    """
+    Calculate the holdup volume.
+    
+    Parameters:
+    holdup_time (int): Time in minutes
+    Ql (float): Liquid flow rate in ft³/min
+    
+    Returns:
+    float: Holdup volume in ft³
+    """
+    return holdup_time * Ql
+
+
+def surgeVolume(factor: float, holdup_time: int, Ql: float) -> float:
+    """
+    Calculate the surge volume.
+
+    Parameters:
+    factor (float): Surge factor (e.g. 1.5 or 2.0)
+    holdup_time (int): Time in minutes
+    Ql (float): Liquid flow rate in ft³/min
+
+    Returns:
+    float: Surge volume in ft³
+    """
+    return factor * holdup_time * Ql
+
+
+def lowLiquidLevelHeight(diameter: int, pressure: float) -> int:
+    """
+    Determines the vertical Low Liquid Level Height (LLL) in inches.
+
+    Parameters:
+    diameter (int): Vessel diameter in feet
+    pressure (float): Operating pressure in psia
+
+    Returns:
+    int: Low Liquid Level Height (inches)
+    """
+    # LLL values from Table 4-6: [<300 psia, >300 psia]
+    lll_lookup = {
+        4: [15, 6],
+        6: [15, 6],
+        8: [15, 6],
+        10: [6, 6],
+        12: [6, 6],
+        16: [6, 6]
+    }
+
+    # Normalize diameter key (e.g. diameter ≤ 4 should map to 4)
+    key = min([d for d in lll_lookup if diameter <= d], default=16)
+
+    if pressure < 300:
+        return lll_lookup[key][0]
+    else:
+        return lll_lookup[key][1]
