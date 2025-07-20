@@ -1,6 +1,36 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import VerticalSeparatorDesign, HorizontalSeparatorDesign
+from SeparatorSizing import run_vertical_separator_calc, run_horizontal_separator_calc
 
-# Create your views here.
+def calc_separator(request):
+    if request.method == 'POST':
+        separator_type = request.POST.get('separator_type', 'vertical')
 
-def calcSeparator(request):
-    return render(request,'main.html')
+        data = {
+            'name': request.POST['name'],
+            'Wg': float(request.POST['Wg']),
+            'Wl': float(request.POST['Wl']),
+            'Pg': float(request.POST['Pg']),
+            'Pl': float(request.POST['Pl']),
+            'Ug': float(request.POST['Ug']),
+            'dp': float(request.POST['dp']),
+            'velocity_factor': float(request.POST['velocity_factor']),
+            'holdup_time': int(request.POST['holdup_time']),
+            'surge_factor': float(request.POST['surge_factor']),
+            'pressure': float(request.POST['pressure']),
+            'mist_eliminator_ring': float(request.POST['mist_eliminator_ring']),
+        }
+
+        if separator_type == 'horizontal':
+            data['L_D_ratio'] = float(request.POST['L_D_ratio'])
+            results = run_horizontal_separator_calc(data)
+
+            design = HorizontalSeparatorDesign.objects.create(**data, **results)
+            return render(request, 'result.html', {'design': design, 'type': 'horizontal'})
+        else:
+            results = run_vertical_separator_calc(data)
+
+            design = VerticalSeparatorDesign.objects.create(**data, **results)
+            return render(request, 'result.html', {'design': design, 'type': 'vertical'})
+
+    return render(request, 'main.html')

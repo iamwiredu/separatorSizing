@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import calcSeparator
+from . import views
 
 urlpatterns = [
-path('',calcSeparator,name='calcSep')
+    path('', views.calc_separator, name='calc_separator'),
 ]
