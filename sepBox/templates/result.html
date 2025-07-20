@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Separator Sizing Results</title>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 960px;
+        }
+        .section-title {
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        svg {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ced4da;
+            background-color: #ffffff;
+        }
+        .label-text {
+            font-size: 12px;
+            background-color: white;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">✅ {{ type|title }} Separator Sizing Results</h2>
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr><th>Design Name</th><td>{{ design.name }}</td></tr>
+            <tr><th>Gas Flow Rate (Wg)</th><td>{{ design.Wg }} lb/hr</td></tr>
+            <tr><th>Liquid Flow Rate (Wl)</th><td>{{ design.Wl }} lb/hr</td></tr>
+            <tr><th>Gas Density (Pg)</th><td>{{ design.Pg }} lb/ft³</td></tr>
+            <tr><th>Liquid Density (Pl)</th><td>{{ design.Pl }} lb/ft³</td></tr>
+            <tr><th>Gas Viscosity (Ug)</th><td>{{ design.Ug }} cP</td></tr>
+            <tr><th>Droplet Diameter (dp)</th><td>{{ design.dp }} ft</td></tr>
+            <tr><th>Velocity Factor</th><td>{{ design.velocity_factor }}</td></tr>
+            <tr><th>Holdup Time</th><td>{{ design.holdup_time }} min</td></tr>
+            <tr><th>Surge Factor</th><td>{{ design.surge_factor }}</td></tr>
+            <tr><th>Operating Pressure</th><td>{{ design.pressure }} psia</td></tr>
+            <tr><th>Mist Eliminator Allowance</th><td>{{ design.mist_eliminator_ring }} ft</td></tr>
+            {% if type == 'horizontal' %}
+            <tr><th>Length-to-Diameter Ratio (L/D)</th><td>{{ design.L_D_ratio }}</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <h4 class="section-title">📊 Computed Results</h4>
+    <table class="table table-striped">
+        <tbody>
+            <tr><th>Cd (Drag Coefficient)</th><td>{{ design.Cd|floatformat:4 }}</td></tr>
+            <tr><th>K (Souders-Brown Constant)</th><td>{{ design.K|floatformat:4 }} ft/s</td></tr>
+            <tr><th>Vt (Terminal Velocity)</th><td>{{ design.Vt|floatformat:4 }} ft/s</td></tr>
+            <tr><th>Vv (Design Gas Velocity)</th><td>{{ design.Vv|floatformat:4 }} ft/s</td></tr>
+            <tr><th>Qg (Gas Volumetric Flow)</th><td>{{ design.Qg|floatformat:4 }} ft³/min</td></tr>
+            <tr><th>Ql (Liquid Volumetric Flow)</th><td>{{ design.Ql|floatformat:4 }} ft³/min</td></tr>
+            <tr><th>Di (Internal Diameter)</th><td>{{ design.Di|floatformat:4 }} ft</td></tr>
+            <tr><th>A (Cross-sectional Area)</th><td>{{ design.A|floatformat:4 }} ft²</td></tr>
+            {% if type == 'horizontal' %}
+            <tr><th>L (Vessel Length)</th><td>{{ design.L|floatformat:4 }} ft</td></tr>
+            {% endif %}
+            <tr><th>Holdup Volume</th><td>{{ design.V_holdup|floatformat:4 }} ft³</td></tr>
+            <tr><th>Surge Volume</th><td>{{ design.V_surge|floatformat:4 }} ft³</td></tr>
+            <tr><th>Low Liquid Level Height (LLL)</th><td>{{ design.LLL }} in</td></tr>
+        </tbody>
+    </table>
+
+    {% if type == "vertical" %}
+    <h4 class="section-title">📐 Vertical Separator Diagram</h4>
+    <svg viewBox="0 0 300 540" preserveAspectRatio="xMidYMid meet">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="black" />
+            </marker>
+        </defs>
+
+        <!-- Vessel -->
+        <rect x="100" y="60" width="80" height="400" rx="40" fill="#cce5ff" stroke="#000" stroke-width="2"/>
+
+        <!-- Inlet -->
+        <line x1="40" y1="260" x2="100" y2="260" stroke="#000" stroke-width="4"/>
+        <text x="10" y="255" class="label-text">Inlet</text>
+
+        <!-- Gas Outlet -->
+        <line x1="140" y1="60" x2="140" y2="30" stroke="#000" stroke-width="3"/>
+        <text x="145" y="35" class="label-text">Gas Out</text>
+
+        <!-- Liquid Outlet -->
+        <line x1="140" y1="460" x2="140" y2="490" stroke="#000" stroke-width="3"/>
+        <text x="145" y="485" class="label-text">Liquid Out</text>
+
+        <!-- Mist Eliminator -->
+        <line x1="100" y1="90" x2="180" y2="90" stroke="green" stroke-width="3"/>
+        <text x="185" y="95" class="label-text">Mist Eliminator</text>
+
+        <!-- Di -->
+        <line x1="100" y1="480" x2="180" y2="480" stroke="red" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+        <text x="120" y="495" class="label-text">Di = {{ design.Di|floatformat:2 }} ft</text>
+
+        <!-- LLL -->
+        <line x1="100" y1="420" x2="180" y2="420" stroke="blue" stroke-dasharray="4"/>
+        <text x="185" y="425" class="label-text">LLL = {{ design.LLL }} in</text>
+
+        <!-- Holdup -->
+        <rect x="100" y="400" width="80" height="20" fill="blue" opacity="0.2"/>
+        <text x="185" y="415" class="label-text">Holdup</text>
+
+        <!-- Surge -->
+        <rect x="100" y="420" width="80" height="40" fill="blue" opacity="0.1"/>
+        <text x="185" y="445" class="label-text">Surge</text>
+    </svg>
+    {% elif type == "horizontal" %}
+    <h4 class="section-title">📐 Horizontal Separator Diagram</h4>
+    <svg viewBox="0 0 700 260" preserveAspectRatio="xMidYMid meet">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="black" />
+            </marker>
+        </defs>
+
+        <!-- Vessel -->
+        <rect x="100" y="80" width="500" height="100" rx="50" fill="#cce5ff" stroke="#000" stroke-width="2"/>
+
+        <!-- Inlet -->
+        <line x1="40" y1="130" x2="100" y2="130" stroke="#000" stroke-width="4"/>
+        <text x="10" y="125" class="label-text">Inlet</text>
+
+        <!-- Gas Outlet -->
+        <line x1="350" y1="80" x2="350" y2="40" stroke="#000" stroke-width="3"/>
+        <text x="360" y="45" class="label-text">Gas Out</text>
+
+        <!-- Liquid Outlet -->
+        <line x1="600" y1="130" x2="660" y2="130" stroke="#000" stroke-width="4"/>
+        <text x="610" y="120" class="label-text">Liquid Out</text>
+
+        <!-- Di -->
+        <line x1="610" y1="80" x2="610" y2="180" stroke="red" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+        <text x="620" y="130" class="label-text">Di = {{ design.Di|floatformat:2 }} ft</text>
+
+        <!-- L -->
+        <line x1="100" y1="200" x2="600" y2="200" stroke="red" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+        <text x="300" y="215" class="label-text">L = {{ design.L|floatformat:2 }} ft</text>
+
+        <!-- LLL -->
+        <line x1="100" y1="145" x2="600" y2="145" stroke="blue" stroke-dasharray="5,3"/>
+        <text x="300" y="140" class="label-text">LLL = {{ design.LLL }} in</text>
+
+        <!-- Holdup Volume -->
+        <rect x="100" y="140" width="500" height="20" fill="blue" opacity="0.2"/>
+        <text x="610" y="155" class="label-text">Holdup</text>
+
+        <!-- Surge Volume -->
+        <rect x="100" y="160" width="500" height="20" fill="blue" opacity="0.1"/>
+        <text x="610" y="175" class="label-text">Surge</text>
+    </svg>
+    {% endif %}
+
+    <a href="/" class="btn btn-secondary mt-4">← Back to Design</a>
+</div>
+</body>
+</html>

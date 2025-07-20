@@ -75,13 +75,30 @@ WSGI_APPLICATION = 'sizing.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "neondb",
+        'USER': "neondb_owner",
+        'PASSWORD': "npg_Su8NOib4TcvK",
+        'HOST': "ep-purple-pond-adelwob9.c-2.us-east-1.aws.neon.tech",  # Unpooled host
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require'
+        },
+        'URL_NO_SSL': "postgres://neondb_owner:npg_Su8NOib4TcvK@ep-purple-pond-adelwob9-pooler.c-2.us-east-1.aws.neon.tech/neondb",
+        'URL': "postgres://neondb_owner:npg_Su8NOib4TcvK@ep-purple-pond-adelwob9-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require",
+        'PRISMA_URL': "postgres://neondb_owner:npg_Su8NOib4TcvK@ep-purple-pond-adelwob9-pooler.c-2.us-east-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require&pgbouncer=true",
+        'URL_NON_POOLING': "postgresql://neondb_owner:npg_Su8NOib4TcvK@ep-purple-pond-adelwob9.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

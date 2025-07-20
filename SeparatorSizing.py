@@ -126,3 +126,86 @@ def lowLiquidLevelHeight(diameter: int, pressure: float) -> int:
         return lll_lookup[key][0]
     else:
         return lll_lookup[key][1]
+
+def run_vertical_separator_calc(data):
+    Wg = data['Wg']
+    Wl = data['Wl']
+    Pg = data['Pg']
+    Pl = data['Pl']
+    Ug = data['Ug']
+    dp = data['dp']
+    velocity_factor = data['velocity_factor']
+    holdup_time = data['holdup_time']
+    surge_factor = data['surge_factor']
+    pressure = data['pressure']
+    mist_eliminator_ring = data['mist_eliminator_ring']
+
+    # Calculations
+    Cd_val = Cd(dp, Pg, Pl, Ug)
+    K_val = K(dp, Cd_val)
+    Vt_val = Vt(K_val, Pl, Pg)
+    Vv_val = Vv(velocity_factor, Vt_val)
+    Qg_val = Qg(Wg, Pg)
+    Di_val = Di(Qg_val, Vv_val, mist_eliminator_ring)
+    A_val = crossecArea(Di_val)
+    Ql_val = Wl / (60 * Pl)
+    V_holdup = holdup_volume(holdup_time, Ql_val)
+    V_surge = surgeVolume(surge_factor, holdup_time, Ql_val)
+    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure)
+
+    return {
+        "Cd": Cd_val,
+        "K": K_val,
+        "Vt": Vt_val,
+        "Vv": Vv_val,
+        "Qg": Qg_val,
+        "Ql": Ql_val,
+        "Di": Di_val,
+        "A": A_val,
+        "V_holdup": V_holdup,
+        "V_surge": V_surge,
+        "LLL": LLL_val
+    }
+
+def run_horizontal_separator_calc(data):
+    Wg = data['Wg']
+    Wl = data['Wl']
+    Pg = data['Pg']
+    Pl = data['Pl']
+    Ug = data['Ug']
+    dp = data['dp']
+    velocity_factor = data['velocity_factor']
+    holdup_time = data['holdup_time']
+    surge_factor = data['surge_factor']
+    pressure = data['pressure']
+    mist_eliminator_ring = data['mist_eliminator_ring']
+    L_D_ratio = data['L_D_ratio']
+
+    # Calculations
+    Cd_val = Cd(dp, Pg, Pl, Ug)
+    K_val = K(dp, Cd_val)
+    Vt_val = Vt(K_val, Pl, Pg)
+    Vv_val = Vv(velocity_factor, Vt_val)
+    Qg_val = Qg(Wg, Pg)
+    Ql_val = Wl / (60 * Pl)
+    A_val = Qg_val / Vv_val
+    Di_val = (4 * A_val / math.pi) ** 0.5
+    L_val = Di_val * L_D_ratio
+    V_holdup = holdup_volume(holdup_time, Ql_val)
+    V_surge = surgeVolume(surge_factor, holdup_time, Ql_val)
+    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure)
+
+    return {
+        "Cd": Cd_val,
+        "K": K_val,
+        "Vt": Vt_val,
+        "Vv": Vv_val,
+        "Qg": Qg_val,
+        "Ql": Ql_val,
+        "A": A_val,
+        "Di": Di_val,
+        "L": L_val,
+        "V_holdup": V_holdup,
+        "V_surge": V_surge,
+        "LLL": LLL_val,
+    }
