@@ -98,34 +98,34 @@ def surgeVolume(factor: float, holdup_time: int, Ql: float) -> float:
     return factor * holdup_time * Ql
 
 
-def lowLiquidLevelHeight(diameter: int, pressure: float) -> int:
+def lowLiquidLevelHeight(diameter_ft: float, pressure_psia: float, is_vertical=True) -> int:
     """
-    Determines the vertical Low Liquid Level Height (LLL) in inches.
+    Determines the Low Liquid Level Height (LLL) in inches, for vertical or horizontal separators.
 
     Parameters:
-    diameter (int): Vessel diameter in feet
-    pressure (float): Operating pressure in psia
+    - diameter_ft (float): Vessel diameter in feet
+    - pressure_psia (float): Operating pressure in psia
+    - is_vertical (bool): True if vertical separator, False if horizontal
 
     Returns:
-    int: Low Liquid Level Height (inches)
+    - int: Low Liquid Level Height (inches)
     """
-    # LLL values from Table 4-6: [<300 psia, >300 psia]
-    lll_lookup = {
-        4: [15, 6],
-        6: [15, 6],
-        8: [15, 6],
-        10: [6, 6],
-        12: [6, 6],
-        16: [6, 6]
+    # Normalize key
+    lll_table = {
+        4: {'vertical': [15, 6], 'horizontal': 9},
+        6: {'vertical': [15, 6], 'horizontal': 10},
+        8: {'vertical': [15, 6], 'horizontal': 11},
+        10: {'vertical': [6, 6], 'horizontal': 12},
+        12: {'vertical': [6, 6], 'horizontal': 13},
+        16: {'vertical': [6, 6], 'horizontal': 15},
     }
 
-    # Normalize diameter key (e.g. diameter ≤ 4 should map to 4)
-    key = min([d for d in lll_lookup if diameter <= d], default=16)
+    key = min([d for d in lll_table if diameter_ft <= d], default=16)
 
-    if pressure < 300:
-        return lll_lookup[key][0]
+    if is_vertical:
+        return lll_table[key]['vertical'][0] if pressure_psia < 300 else lll_table[key]['vertical'][1]
     else:
-        return lll_lookup[key][1]
+        return lll_table[key]['horizontal']
 
 def run_vertical_separator_calc(data):
     Wg = data['Wg']
@@ -151,7 +151,7 @@ def run_vertical_separator_calc(data):
     Ql_val = Wl / (60 * Pl)
     V_holdup = holdup_volume(holdup_time, Ql_val)
     V_surge = surgeVolume(surge_factor, holdup_time, Ql_val)
-    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure)
+    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure, is_vertical=True)
 
     return {
         "Cd": Cd_val,
@@ -193,7 +193,7 @@ def run_horizontal_separator_calc(data):
     L_val = Di_val * L_D_ratio
     V_holdup = holdup_volume(holdup_time, Ql_val)
     V_surge = surgeVolume(surge_factor, holdup_time, Ql_val)
-    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure)
+    LLL_val = lowLiquidLevelHeight(round(Di_val), pressure, is_vertical=False)
 
     return {
         "Cd": Cd_val,
