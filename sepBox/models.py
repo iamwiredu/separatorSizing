@@ -19,7 +19,12 @@ class VerticalSeparatorDesign(models.Model):
     pressure = models.FloatField(help_text="Operating pressure (psia)")
     mist_eliminator_ring = models.FloatField(default=0.5, help_text="Mist eliminator allowance (ft)")
 
-    # --- Computed Results (optional, filled after calculation) ---
+    # New Input Fields
+    dn = models.FloatField(help_text="Inlet nozzle diameter (ft)", null=True, blank=True)
+    inlet_diverter = models.BooleanField(default=False, help_text="Is an inlet diverter present?")
+    mist_eliminator_present = models.BooleanField(default=False, help_text="Is a mist eliminator installed?")
+
+    # --- Computed Results ---
     Qg = models.FloatField(null=True, blank=True, help_text="Gas volumetric flow rate (ft³/min)")
     Ql = models.FloatField(null=True, blank=True, help_text="Liquid volumetric flow rate (ft³/min)")
     Cd = models.FloatField(null=True, blank=True, help_text="Drag coefficient (dimensionless)")
@@ -30,13 +35,17 @@ class VerticalSeparatorDesign(models.Model):
     A = models.FloatField(null=True, blank=True, help_text="Cross-sectional area (ft²)")
     V_holdup = models.FloatField(null=True, blank=True, help_text="Holdup volume (ft³)")
     V_surge = models.FloatField(null=True, blank=True, help_text="Surge volume (ft³)")
+    Holdup_Height = models.FloatField(null=True, blank=True, help_text="Height of holdup section (ft)")
+    Surge_Height = models.FloatField(null=True, blank=True, help_text="Height of surge section (ft)")
     LLL = models.FloatField(null=True, blank=True, help_text="Low Liquid Level Height (inches)")
-
+    Hd = models.FloatField(null=True, blank=True, help_text="Disengagement height (ft)")
+    Hme = models.FloatField(null=True, blank=True, help_text="Mist eliminator height (ft)")
+    H_total = models.FloatField(null=True, blank=True, help_text="Total separator height (ft)")
+    H_lin = models.FloatField(null=True, blank=True, help_text="Height from liquid interface to nozzle centerline (ft)")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Design: {self.name}"
-
 class HorizontalSeparatorDesign(models.Model):
     # --- Input Parameters ---
     name = models.CharField(max_length=100, help_text="Design case identifier")
@@ -57,7 +66,10 @@ class HorizontalSeparatorDesign(models.Model):
     mist_eliminator_ring = models.FloatField(default=0.5, help_text="Mist eliminator allowance (ft)")
     L_D_ratio = models.FloatField(default=3.0, help_text="Length-to-diameter ratio")
 
-    # --- Results ---
+    # Optional input flags
+    mist_eliminator_present = models.BooleanField(default=False, help_text="Is a mist eliminator installed?")
+
+    # --- Computed Results ---
     Qg = models.FloatField(null=True, blank=True)
     Ql = models.FloatField(null=True, blank=True)
     Cd = models.FloatField(null=True, blank=True)
@@ -70,6 +82,19 @@ class HorizontalSeparatorDesign(models.Model):
     V_holdup = models.FloatField(null=True, blank=True)
     V_surge = models.FloatField(null=True, blank=True)
     LLL = models.FloatField(null=True, blank=True)
+
+    Holdup_Height = models.FloatField(null=True, blank=True, help_text="Height of holdup section (ft)")
+    Surge_Height = models.FloatField(null=True, blank=True, help_text="Height of surge section (ft)")
+    H_liquid = models.FloatField(null=True, blank=True, help_text="Total liquid height (ft)")
+    Hme = models.FloatField(null=True, blank=True, help_text="Mist eliminator height (ft)")
+    H_total = models.FloatField(null=True, blank=True, help_text="Total separator height (ft)")
+
+    # Geometry variables
+    D = models.FloatField(null=True, blank=True, help_text="Vessel internal diameter (ft)")
+    Av = models.FloatField(null=True, blank=True, help_text="Gas area above liquid (ft²)")
+    Hv = models.FloatField(null=True, blank=True, help_text="Height of vapor space above liquid (ft)")
+    x = models.FloatField(null=True, blank=True)
+    y = models.FloatField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
