@@ -87,6 +87,7 @@
             <tr><th>Di (Internal Diameter)</th><td>{{ design.Di|floatformat:4 }} ft</td></tr>
             <tr><th>A (Cross-sectional Area)</th><td>{{ design.A|floatformat:4 }} ft²</td></tr>
             {% if type == 'horizontal' %}
+            <tr><th>Vapor Zone Height (Hv)</th><td>{{ design.Hv|floatformat:2 }} ft</td></tr>
 
             <tr><th>L (Vessel Length)</th><td>{{ design.L|floatformat:4 }} ft</td></tr>
             <tr><th>Holdup Height</th><td>{{ design.Holdup_Height|floatformat:4 }} ft</td></tr>
@@ -99,7 +100,9 @@
             {% endif %}
             <tr><th>Holdup Volume</th><td>{{ design.V_holdup|floatformat:4 }} ft³</td></tr>
             <tr><th>Surge Volume</th><td>{{ design.V_surge|floatformat:4 }} ft³</td></tr>
-            <tr><th>Low Liquid Level Height (LLL)</th><td>{{ design.LLL }} in</td></tr>
+        {% if type == 'vertical' %}
+        <tr><th>Low Liquid Level Height (LLL)</th><td>{{ design.LLL }} in</td></tr>
+        {% endif %}
         </tbody>
     </table>
 
@@ -114,6 +117,18 @@
 <!-- Display Equation -->
 <div class="bg-white p-3 border rounded mb-3">
     $$ H_T = H_{LLL} + H_H + H_S + H_{LIN} + H_D + H_{ME} \quad \text{(in ft)} $$
+</div>
+<div class="height-components">
+  <h3>Vertical Separator Height Components Explanation</h3>
+  <ul>
+    <li><strong>H<sub>LLL</sub></strong>: Low Liquid Level height – the minimum liquid level maintained to avoid gas blow-through.</li>
+    <li><strong>H<sub>H</sub></strong>: Holdup Height – height required to contain the normal operating liquid volume.</li>
+    <li><strong>H<sub>S</sub></strong>: Surge Height – extra liquid height capacity to handle sudden inflow surges.</li>
+    <li><strong>H<sub>LIN</sub></strong>: Height from liquid interface to nozzle centerline – used to position the inlet nozzle above liquid level for separation efficiency.</li>
+    <li><strong>H<sub>D</sub></strong>: Disengagement Height – space for gas and liquid to separate without re-entrainment.</li>
+    <li><strong>H<sub>ME</sub></strong>: Mist Eliminator Height – vertical clearance for installing and operating a mist eliminator (e.g., wire mesh).</li>
+  </ul>
+  <p><em>All heights are in feet (ft).</em></p>
 </div>
 
 <!-- Substituted Values -->
@@ -149,7 +164,7 @@
 
         <!-- Height Annotations Right -->
         <line x1="220" y1="580" x2="220" y2="600" stroke="black" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-        <text x="230" y="592" class="label-text">H<sub>LLL</sub> = {{ design.LLL }} ft</text>
+    
 
         <line x1="220" y1="540" x2="220" y2="580" stroke="black" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
         <text x="230" y="562" class="label-text">H<sub>H</sub> = {{ design.Holdup_Height|floatformat:2 }} ft</text>
@@ -203,7 +218,7 @@
 
         <!-- LLL -->
         <line x1="100" y1="145" x2="600" y2="145" stroke="blue" stroke-dasharray="5,3"/>
-        <text x="300" y="140" class="label-text">LLL = {{ design.LLL }} in</text>
+      
 
         <!-- Holdup Volume -->
         <rect x="100" y="140" width="500" height="20" fill="blue" opacity="0.2"/>

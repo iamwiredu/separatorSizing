@@ -288,7 +288,7 @@ def run_horizontal_separator_calc(data):
         "Qg": Qg_val,
         "Ql": Ql_val,
         "A": A_val,
-        "D": D_val,
+        "Di": D_val,
         "V_holdup": V_holdup,
         "V_surge": V_surge,
         "Av": Av,
