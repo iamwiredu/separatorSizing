@@ -110,7 +110,7 @@ def surgeVolume(factor: float, holdup_time: int, Ql: float) -> float:
     Returns:
     float: Surge volume in ft³
     """
-    return factor * holdup_time * Ql
+    return factor * Ql
 
 
 def lowLiquidLevelHeight(diameter_ft: float, pressure_psia: float, is_vertical=True) -> int:
@@ -150,7 +150,7 @@ def run_vertical_separator_calc(data):
     Pl = data['Pl']
     Ug = data['Ug']
     dp = data['dp']
-    dn = data ['dn']
+    dn = 0 if isinstance(data.get('dn'), str) else data.get('dn', 0)
     inlet_diverter = data['inlet_diverter']
     mist_eliminator_present = data['mist_eliminator_present']
     velocity_factor = data['velocity_factor']
@@ -248,10 +248,10 @@ def run_horizontal_separator_calc(data):
         elif p >= 500:
             return (4.0, 6.0)
         
-    def calculate_diameter(Vh, Vs, L_over_D):
-        numerator = 4 * (Vh + Vs)
-        denominator = 0.5 * math.pi * L_over_D
-        D = (numerator / denominator) ** (1 / 3)
+    def calculate_diameter(Qg, Vv_val):
+        numerator = 4 * Qg
+        denominator =  math.pi * Vv_val
+        D = (numerator / denominator) ** (0.5)
         return D
 
 
@@ -264,7 +264,7 @@ def run_horizontal_separator_calc(data):
     V_holdup = holdup_volume(holdup_time, Ql_val)
     V_surge = surgeVolume(surge_factor, holdup_time, Ql_val)
     Ld_ratio = get_ld_ratio_range(pressure)
-    D_val = calculate_diameter(V_holdup,V_surge,max(Ld_ratio))
+    D_val = calculate_diameter(Qg_val,Vv_val)
     A_val = crossecArea(D_val) #this is the total crossec
     
         # After A_val is calculated (total cross-sectional area)
@@ -276,7 +276,7 @@ def run_horizontal_separator_calc(data):
     x = Hv / D_val
     y = 0.5 * x - 0.21 * x**2 + 0.035 * x**3
     Av = y * A_val  # vapor disengagement area
-    H_liquid = V_holdup / A_val + V_surge / A_val
+    H_liquid = 1
     L_val = Ld_ratio[1] * D_val  # max of the pressure-based L/D ratio
 
     # You can now return all values

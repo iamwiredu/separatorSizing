@@ -23,7 +23,11 @@ def calc_separator(request):
 
         # Only for vertical
         if separator_type == 'vertical':
-            data['dn'] = float(request.POST['dn'])
+            data['dn'] = request.POST['dn']
+            if type(data['dn']) != str:
+                data['dn'] = float(request.POST['dn'])
+            else:
+                data['dn'] = 0
             data['inlet_diverter'] = request.POST.get('inlet_diverter') == 'on'
             data['mist_eliminator_present'] = request.POST.get('mist_eliminator_present') == 'on'
 

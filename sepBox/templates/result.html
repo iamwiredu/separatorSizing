@@ -58,14 +58,7 @@
             <!-- Liquid Height Equation -->
 <h4 class="section-title">📐 Horizontal Separator Liquid Height</h4>
 
-<div class="bg-white p-3 border rounded mb-3">
-    $$ H_L = H_H + H_S \quad \text{(in ft)} $$
-</div>
-
 <div class="bg-light p-3 border rounded">
-    <p>
-        $$ H_L = {{ design.Holdup_Height|floatformat:2 }} + {{ design.Surge_Height|floatformat:2 }} $$
-    </p>
     <p>
         $$ H_L = {{ design.H_liquid|floatformat:2 }} \, \text{ft} $$
     </p>
