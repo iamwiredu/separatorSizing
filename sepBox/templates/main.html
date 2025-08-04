@@ -101,11 +101,11 @@
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Holdup Time [min]</label>
-                    <input type="number" name="holdup_time" class="form-control" value="5" required>
+                    <input type="number" name="holdup_time" class="form-control" value="" required>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Surge Factor</label>
-                    <input type="number" step="any" name="surge_factor" class="form-control" value="1.5" required>
+                    <label class="form-label">Surge Time</label>
+                    <input type="number" step="any" name="surge_factor" class="form-control" value="" required>
                 </div>
             </div>
 
@@ -120,6 +120,30 @@
                 </div>
             </div>
         </div>
+<!-- Vertical Only Fields -->
+<div id="verticalFields" class="form-section">
+    <h5>Vertical Specific</h5>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Inlet Nozzle Diameter (dN) [ft]</label>
+            <input type="number" step="any" name="dn" class="form-control" >
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" name="inlet_diverter" id="inletDiverter">
+                <label class="form-check-label" for="inletDiverter">
+                    Inlet Diverter Present
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="mist_eliminator_present" id="mistEliminatorPresent">
+                <label class="form-check-label" for="mistEliminatorPresent">
+                    Mist Eliminator Installed
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Horizontal Only Field -->
         <div id="horizontalFields" class="form-section hidden">
@@ -127,6 +151,12 @@
             <div class="mb-3">
                 <label class="form-label">Length-to-Diameter Ratio (L/D)</label>
                 <input type="number" step="any" name="L_D_ratio" class="form-control" value="3.0">
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="mist_eliminator_present" id="mistEliminatorPresent">
+                <label class="form-check-label" for="mistEliminatorPresent">
+                    Mist Eliminator Installed
+                </label>
             </div>
         </div>
 
@@ -138,16 +168,31 @@
     const toggleSwitch = document.getElementById('separatorToggle');
     const separatorTypeInput = document.getElementById('separatorType');
     const horizontalFields = document.getElementById('horizontalFields');
+    const verticalFields = document.getElementById('verticalFields');
 
     toggleSwitch.addEventListener('change', function () {
         if (this.checked) {
             separatorTypeInput.value = 'horizontal';
             horizontalFields.classList.remove('hidden');
+            verticalFields.classList.add('hidden');
         } else {
             separatorTypeInput.value = 'vertical';
             horizontalFields.classList.add('hidden');
+            verticalFields.classList.remove('hidden');
+        }
+    });
+
+    // Initialize on load (optional)
+    window.addEventListener('DOMContentLoaded', function () {
+        if (toggleSwitch.checked) {
+            horizontalFields.classList.remove('hidden');
+            verticalFields.classList.add('hidden');
+        } else {
+            horizontalFields.classList.add('hidden');
+            verticalFields.classList.remove('hidden');
         }
     });
 </script>
+
 </body>
 </html>

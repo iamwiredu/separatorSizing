@@ -21,16 +21,25 @@ def calc_separator(request):
             'mist_eliminator_ring': float(request.POST['mist_eliminator_ring']),
         }
 
-        if separator_type == 'horizontal':
-            data['L_D_ratio'] = float(request.POST['L_D_ratio'])
-            results = run_horizontal_separator_calc(data)
+        # Only for vertical
+        if separator_type == 'vertical':
+            data['dn'] = request.POST['dn']
+            if type(data['dn']) != str:
+                data['dn'] = float(request.POST['dn'])
+            else:
+                data['dn'] = 0
+            data['inlet_diverter'] = request.POST.get('inlet_diverter') == 'on'
+            data['mist_eliminator_present'] = request.POST.get('mist_eliminator_present') == 'on'
 
-            design = HorizontalSeparatorDesign.objects.create(**data, **results)
-            return render(request, 'result.html', {'design': design, 'type': 'horizontal'})
-        else:
             results = run_vertical_separator_calc(data)
-
             design = VerticalSeparatorDesign.objects.create(**data, **results)
             return render(request, 'result.html', {'design': design, 'type': 'vertical'})
+
+        else:
+            data['mist_eliminator_present'] = request.POST.get('mist_eliminator_present') == 'on'
+            data['L_D_ratio'] = float(request.POST['L_D_ratio'])
+            results = run_horizontal_separator_calc(data)
+            design = HorizontalSeparatorDesign.objects.create(**data, **results)
+            return render(request, 'result.html', {'design': design, 'type': 'horizontal'})
 
     return render(request, 'main.html')
